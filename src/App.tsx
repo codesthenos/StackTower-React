@@ -1,7 +1,8 @@
 function App () {
   return (
     <>
-      <h1>STACK TOWER</h1>
+      <canvas id="canvas">
+      </canvas>
     </>
   )
 }

@@ -15,19 +15,29 @@
 
 #root {
   width: 100%;
-  padding: 2rem;
-  text-align: center;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 body {
   margin: 0;
-  display: flex;
-  place-items: center;
   min-width: 320px;
-  min-height: 100vh;
+  height: 100vh;
+  box-sizing: border-box;
 }
 
 h1 {
   font-size: 3.2em;
   line-height: 1.1;
+}
+
+#canvas {
+  width: 70%;
+  height: 90%;
+  border: 2px solid white;
+  display: flex;
+  justify-content: center;
+  align-items: end;
 }
