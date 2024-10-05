@@ -1,58 +1,65 @@
-"use client"
+import { useEffect, useRef, useState, useCallback } from 'react'
 
-import { useEffect, useRef } from 'react'
-
-const CANVAS_WIDTH = 320
-const CANVAS_HEIGHT = 500
+const CANVAS_WIDTH = 800
+const CANVAS_HEIGHT = 600
 const BOX_WIDTH = 50
 const BOX_HEIGHT = 50
-const SPEED = 2
+const INITIAL_X_SPEED = 5
 
 export default function App () {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const boxXRef = useRef(CANVAS_WIDTH / 2 - BOX_WIDTH / 2)
+  const xSpeedRef = useRef(INITIAL_X_SPEED)
+  const [score, setScore] = useState(0)
 
-  useEffect(() => {
+  const drawGame = useCallback(() => {
     const canvas = canvasRef.current
     if (!canvas) return
-
     const ctx = canvas.getContext('2d')
     if (!ctx) return
 
-    let boxX = CANVAS_WIDTH / 2 - BOX_WIDTH / 2
-    let direction = 1 // 1 for right, -1 for left
+    // Clear canvas
+    ctx.fillStyle = '#e3bb56'
+    ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
 
-    const draw = () => {
-      // Clear the canvas
-      ctx.fillStyle = 'black'
-      ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-
-      // Draw the box
-      ctx.fillStyle = 'white'
-      ctx.fillRect(boxX, CANVAS_HEIGHT - BOX_HEIGHT, BOX_WIDTH, BOX_HEIGHT)
-
-      // Move the box
-      boxX += SPEED * direction
-
-      // Check for wall collision
-      if (boxX + BOX_WIDTH > CANVAS_WIDTH || boxX < 0) {
-        direction *= -1
-      }
-
-      // Request next frame
-      requestAnimationFrame(draw)
-    }
-
-    // Start the animation
-    draw()
+    // Draw box
+    ctx.fillStyle = '#fff'
+    ctx.fillRect(boxXRef.current, CANVAS_HEIGHT - BOX_HEIGHT, BOX_WIDTH, BOX_HEIGHT)
   }, [])
 
+  const updateGameState = useCallback(() => {
+    boxXRef.current += xSpeedRef.current
+
+    if (boxXRef.current <= 0 || boxXRef.current + BOX_WIDTH >= CANVAS_WIDTH) {
+      xSpeedRef.current = -xSpeedRef.current
+      setScore(prevScore => prevScore + 1)
+      boxXRef.current = Math.max(0, Math.min(boxXRef.current, CANVAS_WIDTH - BOX_WIDTH))
+    }
+  }, [])
+
+  useEffect(() => {
+    let animationId: number
+
+    const gameLoop = () => {
+      updateGameState()
+      drawGame()
+      animationId = requestAnimationFrame(gameLoop)
+    }
+
+    gameLoop()
+
+    return () => {
+      cancelAnimationFrame(animationId)
+    }
+  }, [drawGame, updateGameState])
+
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900">
+    <div>
+      <div>Score: {score}</div>
       <canvas
         ref={canvasRef}
         width={CANVAS_WIDTH}
         height={CANVAS_HEIGHT}
-        className="border border-white"
       />
     </div>
   )
