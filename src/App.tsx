@@ -26,6 +26,26 @@ function App () {
   const [scrollCounter, setScrollCounter] = useState(0)
   const [cameraY, setCameraY] = useState(0)
 
+  //Initial box move
+  function initialBoxMove () {
+    const updatedBoxes = boxes.map(box => box === boxes[current] ? { ...box, x: box.x + INITIAL_X_SPEED } : box)
+    setBoxes(updatedBoxes)
+    
+    const isMovingForwards = xSpeed > 0
+    const isMovingBackwards = xSpeed < 0
+    
+    const isOnRightLimit = boxes[current].x === CANVAS_WIDTH
+    const isOnLeftLimit = boxes[current].x - CANVAS_WIDTH === 0
+          
+    if (
+      (isMovingForwards && isOnRightLimit) ||
+      (isMovingBackwards && isOnLeftLimit)
+    ) {
+      setMode(MODES.GAMEOVER)
+      console.log(mode)
+    }
+  }
+
   useEffect(() => {
     //Canvas context
     const canvas = document.getElementById('canvas')
@@ -40,7 +60,7 @@ function App () {
     }
     //Draw boxes
     function drawBoxes () {
-      boxes.forEach((box: box) => {
+      boxes.forEach((box) => {
         const { x, y, width, color } = box
         const newY = CANVAS_HEIGHT - y + cameraY
         
@@ -55,12 +75,16 @@ function App () {
   
       drawBackground()
       drawBoxes()
-
+  
+      if (mode === MODES.BOUNCE) {
+        initialBoxMove()
+      }
+  
       window.requestAnimationFrame(draw)
     }
-
+  
     draw()
-  }, [boxes])
+  }, [])
   //Restart Game to initial values
   function restart () {
     setBoxes([{
