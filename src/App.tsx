@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react"
 //Constants and enum
 import {
-  INITIAL_BOX_WIDTH,
   CANVAS_HEIGHT,
+  CANVAS_WIDTH,
+  INITIAL_BOX_WIDTH,
   INITIAL_X_SPEED,
   INITIAL_Y_SPEED,
   BOX_HEIGHT,
@@ -13,8 +14,8 @@ import type { box } from "./types.d.ts"
 function App () {
   //State
   const [boxes, setBoxes] = useState<box[]>([{
-    x: 0,
-    y: CANVAS_HEIGHT,
+    x: (CANVAS_WIDTH / 2) - (INITIAL_BOX_WIDTH / 2),
+    y: BOX_HEIGHT,
     width: INITIAL_BOX_WIDTH,
     color: "#fff"
   }])
@@ -33,16 +34,16 @@ function App () {
     if (!context) return
     //Draw Background
     function drawBackground () {
-      if (!context || !(canvas instanceof HTMLCanvasElement)) return
+      if (!context) return
       context.fillStyle = "#e3bb56"
-      context.fillRect(0, 0, canvas.width, canvas.height)
+      context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
     }
     //Draw boxes
     function drawBoxes () {
       boxes.forEach((box: box) => {
         const { x, y, width, color } = box
         const newY = CANVAS_HEIGHT - y + cameraY
-        //console.log(`Drawing box at x: ${x}, newY: ${newY}, width: ${width}, color: ${color}`)
+        
         if (!context) return
         context.fillStyle = color
         context.fillRect(x, newY, width, BOX_HEIGHT)
@@ -63,8 +64,8 @@ function App () {
   //Restart Game to initial values
   function restart () {
     setBoxes([{
-      x: 0,
-      y: CANVAS_HEIGHT,
+      x: (CANVAS_WIDTH / 2) - (INITIAL_BOX_WIDTH / 2),
+      y: BOX_HEIGHT,
       width: INITIAL_BOX_WIDTH,
       color: "#fff"
     }])
@@ -82,10 +83,13 @@ function App () {
         <div className="score">
           <h2>SCORE</h2>
           <span>{current}</span>
+          <span>xSpeed = {xSpeed}</span>
+          <span>ySpeed = {ySpeed}</span>
+          <span>scrollCounter = {scrollCounter}</span>
         </div>
         <button onClick={restart}>ReStart</button>
       </aside>
-      <canvas id="canvas" width={400} height={CANVAS_HEIGHT}></canvas>
+      <canvas id="canvas" width={CANVAS_WIDTH} height={CANVAS_HEIGHT}></canvas>
     </>
   )
 }
