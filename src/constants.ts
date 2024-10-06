@@ -6,7 +6,6 @@ export const INITIAL_Y_SPEED = 5
 export const INITIAL_X_SPEED = 0.1
 
 export enum MODES {
-  FALL = 'fall',
   BOUNCE = 'bounce',
   GAMEOVER = 'gameover'
 }
