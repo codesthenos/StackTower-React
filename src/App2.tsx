@@ -6,6 +6,7 @@ function App () {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const scoreRef = useRef<HTMLSpanElement | null>(null)
   const currentRef = useRef(1)
+  const modeRef = useRef<MODES>(MODES.BOUNCE)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -14,12 +15,7 @@ function App () {
   
     const score = scoreRef.current
   
-    // CONSTANTS
-    const MODES = {
-      FALL: 'fall',
-      BOUNCE: 'bounce',
-      GAMEOVER: 'gameover'
-    }
+    /* CONSTANTS */
     const INITIAL_BOX_WIDTH = 200
     const INITIAL_BOX_Y = 600
   
@@ -30,7 +26,7 @@ function App () {
     // STATE
     let boxes = []
     let debris = { x: 0, y: 0, width: 0 }
-    let scrollCounter, cameraY, mode, xSpeed, ySpeed
+    let scrollCounter, cameraY, xSpeed, ySpeed
   
     function drawBackground () {
       context.fillStyle = 'rgba(0, 0, 0, 0.5)'
@@ -127,7 +123,7 @@ function App () {
       
       if (Math.abs(difference) >= currentBox.width) {
         gameOver(context, canvas)
-        mode = MODES.GAMEOVER
+        modeRef.current = MODES.GAMEOVER
         return
       }
       
@@ -137,7 +133,7 @@ function App () {
       xSpeed += xSpeed > 0 ? 1 : -1
       currentRef.current += 1
       scrollCounter = BOX_HEIGHT
-      mode = MODES.BOUNCE
+      modeRef.current = MODES.BOUNCE
       
       score.textContent = currentRef.current - 1
       
@@ -165,16 +161,16 @@ function App () {
     }
     
     document.addEventListener('keydown', (event) => {
-      if (event.key === ' ' && mode === MODES.BOUNCE) {
-        mode = MODES.FALL
+      if (event.key === ' ' && modeRef.current === MODES.BOUNCE) {
+        modeRef.current = MODES.FALL
       }
     })
     
     canvas.onpointerdown = () => {
-      if (mode === MODES.GAMEOVER) {
+      if (modeRef.current === MODES.GAMEOVER) {
         restart()
-      } else if (mode === MODES.BOUNCE) {
-        mode = MODES.FALL
+      } else if (modeRef.current === MODES.BOUNCE) {
+        modeRef.current = MODES.FALL
       }
     }
     
@@ -188,7 +184,7 @@ function App () {
   
       debris = { x: 0, y: 0, width: 0 }
       currentRef.current = 1
-      mode = MODES.BOUNCE
+      modeRef.current = MODES.BOUNCE
       xSpeed = INITIAL_X_SPEED
       ySpeed = INITIAL_Y_SPEED
       scrollCounter = 0
@@ -198,15 +194,15 @@ function App () {
     }
     
     function draw () {
-      if (mode === MODES.GAMEOVER) return
+      if (modeRef.current === MODES.GAMEOVER) return
       
       drawBackground()
       drawBoxes()
       drawDebris()
       
-      if (mode === MODES.BOUNCE) {
+      if (modeRef.current === MODES.BOUNCE) {
         moveAndDetectCollision()
-      } else if (mode === MODES.FALL) {
+      } else if (modeRef.current === MODES.FALL) {
         updateFallMode()
       }
   

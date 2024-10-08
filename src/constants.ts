@@ -8,6 +8,7 @@ export const INITIAL_X_SPEED = 1
 export const INITIAL_BOXES = [{ x: 100, y: 100, width: 100, color: '#eee' }]
 
 export enum MODES {
+  FALL = 'fall',
   BOUNCE = 'bounce',
   GAMEOVER = 'gameover'
 }
