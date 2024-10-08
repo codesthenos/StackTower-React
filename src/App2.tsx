@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { MODES, CANVAS_WIDTH, CANVAS_HEIGHT, BOX_HEIGHT, INITIAL_BOX_WIDTH, INITIAL_X_SPEED, INITIAL_Y_SPEED, INITIAL_BOX_Y } from './constants.ts'
 import { createStepColor, gameOver } from './gameLogic.ts'
-import type { box } from './types.d.ts'
+import type { box, debris } from './types.d.ts'
 
 function App () {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
@@ -12,6 +12,8 @@ function App () {
   const cameraRef = useRef(0)
   const xSpeedRef = useRef(INITIAL_X_SPEED)
   const ySpeedRef = useRef(INITIAL_Y_SPEED)
+  const boxesRef = useRef<box[]>([])
+  const debrisRef = useRef<debris>({ x: 0, y: 0, width: 0 })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -19,10 +21,6 @@ function App () {
     const context = canvas.getContext('2d')
   
     const score = scoreRef.current
-  
-    // STATE
-    let boxes: box[] = []
-    let debris = { x: 0, y: 0, width: 0 }
   
     function drawBackground () {
       if (!context) return
@@ -32,7 +30,7 @@ function App () {
     
     function drawDebris () {
       if (!context) return
-      const { x, y, width } = debris
+      const { x, y, width } = debrisRef.current
       const newY = INITIAL_BOX_Y - y + cameraRef.current
       
       context.fillStyle = 'red'
@@ -41,7 +39,7 @@ function App () {
     
     function drawBoxes () {
       if (!context) return
-      boxes.forEach((box) => {
+      boxesRef.current.forEach((box) => {
         const { x, y, width, color } = box
         const newY = INITIAL_BOX_Y - y + cameraRef.current
         
@@ -58,23 +56,23 @@ function App () {
     }
     
     function createNewBox () {
-      boxes[currentRef.current] = {
+      boxesRef.current[currentRef.current] = {
         x: 0,
         y: (currentRef.current + 5) * BOX_HEIGHT,
-        width: boxes[currentRef.current - 1].width,
+        width: boxesRef.current[currentRef.current - 1].width,
         color: createStepColor(currentRef.current)
       }
     }
     
-    function createNewDebris (difference) {
-      const currentBox = boxes[currentRef.current]
-      const previousBox = boxes[currentRef.current - 1]
+    function createNewDebris (difference: number) {
+      const currentBox = boxesRef.current[currentRef.current]
+      const previousBox = boxesRef.current[currentRef.current - 1]
       
       const debrisX = currentBox.x > previousBox.x
         ? currentBox.x + currentBox.width
         : currentBox.x
         
-      debris = {
+      debrisRef.current = {
         x: debrisX,
         y: currentBox.y,
         width: difference
@@ -82,19 +80,19 @@ function App () {
     }
     
     function updateFallMode () {
-      const currentBox = boxes[currentRef.current]
+      const currentBox = boxesRef.current[currentRef.current]
       currentBox.y -= ySpeedRef.current
       
-      const positionPreviousBox = boxes[currentRef.current - 1].y + BOX_HEIGHT
+      const positionPreviousBox = boxesRef.current[currentRef.current - 1].y + BOX_HEIGHT
       
       if (currentBox.y === positionPreviousBox) {
         handleBoxLanding()
       }
     }
     
-    function adjustCurrentBox (difference) {
-      const currentBox = boxes[currentRef.current]
-      const previousBox = boxes[currentRef.current - 1]
+    function adjustCurrentBox (difference: number) {
+      const currentBox = boxesRef.current[currentRef.current]
+      const previousBox = boxesRef.current[currentRef.current - 1]
       
       if (currentBox.x > previousBox.x) {
         currentBox.width -= difference
@@ -105,8 +103,8 @@ function App () {
     }
 
     function handleBoxLanding () {
-      const currentBox = boxes[currentRef.current]
-      const previousBox = boxes[currentRef.current - 1]
+      const currentBox = boxesRef.current[currentRef.current]
+      const previousBox = boxesRef.current[currentRef.current - 1]
       
       const difference = currentBox.x - previousBox.x
       
@@ -130,7 +128,7 @@ function App () {
     }
     
     function moveAndDetectCollision () {
-      const currentBox = boxes[currentRef.current]
+      const currentBox = boxesRef.current[currentRef.current]
       currentBox.x += xSpeedRef.current
       
       const isMovingRight = xSpeedRef.current > 0
@@ -164,14 +162,14 @@ function App () {
     }
     
     function initializeGameState () {
-      boxes = [{
+      boxesRef.current = [{
         x: (CANVAS_WIDTH / 2) - (INITIAL_BOX_WIDTH / 2),
         y: 200,
         width: INITIAL_BOX_WIDTH,
         color: 'white'
       }]
   
-      debris = { x: 0, y: 0, width: 0 }
+      debrisRef.current = { x: 0, y: 0, width: 0 }
       currentRef.current = 1
       modeRef.current = MODES.BOUNCE
       xSpeedRef.current = INITIAL_X_SPEED
@@ -195,7 +193,7 @@ function App () {
         updateFallMode()
       }
   
-      debris.y -= ySpeedRef.current
+      debrisRef.current.y -= ySpeedRef.current
       updateCamera()
       
       window.requestAnimationFrame(draw)

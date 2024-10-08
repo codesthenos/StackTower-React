@@ -5,6 +5,12 @@ export interface box {
   color: string
 }
 
+export interface debris {
+  x: number
+  y: number
+  width: number
+}
+
 export interface state {
   current: number
   mode: MODES
