@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { MODES, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants.ts'
+import { MODES, CANVAS_WIDTH, CANVAS_HEIGHT, BOX_HEIGHT, INITIAL_BOX_WIDTH, INITIAL_X_SPEED, INITIAL_Y_SPEED, INITIAL_BOX_Y } from './constants.ts'
 import { createStepColor, gameOver } from './gameLogic.ts'
 import type { box } from './types.d.ts'
 
@@ -10,6 +10,8 @@ function App () {
   const modeRef = useRef<MODES>(MODES.BOUNCE)
   const scrollRef = useRef(0)
   const cameraRef = useRef(0)
+  const xSpeedRef = useRef(INITIAL_X_SPEED)
+  const ySpeedRef = useRef(INITIAL_Y_SPEED)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -18,18 +20,9 @@ function App () {
   
     const score = scoreRef.current
   
-    /* CONSTANTS */
-    const INITIAL_BOX_WIDTH = 200
-    const INITIAL_BOX_Y = 600
-  
-    const BOX_HEIGHT = 50
-    const INITIAL_Y_SPEED = 5
-    const INITIAL_X_SPEED = 2
-  
     // STATE
     let boxes: box[] = []
     let debris = { x: 0, y: 0, width: 0 }
-    let xSpeed, ySpeed
   
     function drawBackground () {
       if (!context) return
@@ -90,7 +83,7 @@ function App () {
     
     function updateFallMode () {
       const currentBox = boxes[currentRef.current]
-      currentBox.y -= ySpeed
+      currentBox.y -= ySpeedRef.current
       
       const positionPreviousBox = boxes[currentRef.current - 1].y + BOX_HEIGHT
       
@@ -126,7 +119,7 @@ function App () {
       adjustCurrentBox(difference)
       createNewDebris(difference)
       
-      xSpeed += xSpeed > 0 ? 1 : -1
+      xSpeedRef.current += xSpeedRef.current > 0 ? 1 : -1
       currentRef.current += 1
       scrollRef.current = BOX_HEIGHT
       modeRef.current = MODES.BOUNCE
@@ -138,10 +131,10 @@ function App () {
     
     function moveAndDetectCollision () {
       const currentBox = boxes[currentRef.current]
-      currentBox.x += xSpeed
+      currentBox.x += xSpeedRef.current
       
-      const isMovingRight = xSpeed > 0
-      const isMovingLeft = xSpeed < 0
+      const isMovingRight = xSpeedRef.current > 0
+      const isMovingLeft = xSpeedRef.current < 0
       
       const hasHitRightSide =
       currentBox.x + currentBox.width > CANVAS_WIDTH
@@ -152,7 +145,7 @@ function App () {
         (isMovingRight && hasHitRightSide) ||
         (isMovingLeft && hasHitLeftSide)
       ) {
-        xSpeed = -xSpeed
+        xSpeedRef.current = -xSpeedRef.current
       }
     }
     
@@ -181,8 +174,8 @@ function App () {
       debris = { x: 0, y: 0, width: 0 }
       currentRef.current = 1
       modeRef.current = MODES.BOUNCE
-      xSpeed = INITIAL_X_SPEED
-      ySpeed = INITIAL_Y_SPEED
+      xSpeedRef.current = INITIAL_X_SPEED
+      ySpeedRef.current = INITIAL_Y_SPEED
       scrollRef.current = 0
       cameraRef.current = 0
   
@@ -202,7 +195,7 @@ function App () {
         updateFallMode()
       }
   
-      debris.y -= ySpeed
+      debris.y -= ySpeedRef.current
       updateCamera()
       
       window.requestAnimationFrame(draw)
