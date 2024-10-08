@@ -1,18 +1,11 @@
-import { useEffect, useRef } from 'react'
-import { MODES } from './constants.ts'
-import { gameOver } from './gameLogic.ts'
+import { useEffect } from "react"
 
 function App () {
-  const canvasRef = useRef<HTMLCanvasElement | null>(null)
-  const scoreRef = useRef<HTMLSpanElement | null>(null)
-  const currentRef = useRef(1)
-
   useEffect(() => {
-    const canvas = canvasRef.current
-    if (!canvas) return
+    const canvas = document.querySelector('canvas')
     const context = canvas.getContext('2d')
   
-    const score = scoreRef.current
+    const score = document.querySelector('#score')
   
     // CONSTANTS
     const MODES = {
@@ -30,8 +23,25 @@ function App () {
     // STATE
     let boxes = []
     let debris = { x: 0, y: 0, width: 0 }
-    let scrollCounter, cameraY, mode, xSpeed, ySpeed
+    let scrollCounter, cameraY, current, mode, xSpeed, ySpeed
   
+    function createStepColor (step) {
+      if (step === 0) return 'white'
+  
+      const red = Math.floor(Math.random() * 255)
+      const green = Math.floor(Math.random() * 255)
+      const blue = Math.floor(Math.random() * 255)
+  
+      return `rgb(${red}, ${green}, ${blue})`
+    }
+  
+    function updateCamera () {
+      if (scrollCounter > 0) {
+        cameraY++
+        scrollCounter--
+      }
+    }
+    
     function drawBackground () {
       context.fillStyle = 'rgba(0, 0, 0, 0.5)'
       context.fillRect(0, 0, canvas.width, canvas.height)
@@ -55,35 +65,18 @@ function App () {
       })
     }
     
-    function createStepColor (step) {
-      if (step === 0) return 'white'
-  
-      const red = Math.floor(Math.random() * 255)
-      const green = Math.floor(Math.random() * 255)
-      const blue = Math.floor(Math.random() * 255)
-  
-      return `rgb(${red}, ${green}, ${blue})`
-    }
-  
-    function updateCamera () {
-      if (scrollCounter > 0) {
-        cameraY++
-        scrollCounter--
-      }
-    }
-    
     function createNewBox () {
-      boxes[currentRef.current] = {
+      boxes[current] = {
         x: 0,
-        y: (currentRef.current + 5) * BOX_HEIGHT,
-        width: boxes[currentRef.current - 1].width,
-        color: createStepColor(currentRef.current)
+        y: (current + 5) * BOX_HEIGHT,
+        width: boxes[current - 1].width,
+        color: createStepColor(current)
       }
     }
     
     function createNewDebris (difference) {
-      const currentBox = boxes[currentRef.current]
-      const previousBox = boxes[currentRef.current - 1]
+      const currentBox = boxes[current]
+      const previousBox = boxes[current - 1]
       
       const debrisX = currentBox.x > previousBox.x
         ? currentBox.x + currentBox.width
@@ -97,10 +90,10 @@ function App () {
     }
     
     function updateFallMode () {
-      const currentBox = boxes[currentRef.current]
+      const currentBox = boxes[current]
       currentBox.y -= ySpeed
       
-      const positionPreviousBox = boxes[currentRef.current - 1].y + BOX_HEIGHT
+      const positionPreviousBox = boxes[current - 1].y + BOX_HEIGHT
       
       if (currentBox.y === positionPreviousBox) {
         handleBoxLanding()
@@ -108,8 +101,8 @@ function App () {
     }
     
     function adjustCurrentBox (difference) {
-      const currentBox = boxes[currentRef.current]
-      const previousBox = boxes[currentRef.current - 1]
+      const currentBox = boxes[current]
+      const previousBox = boxes[current - 1]
       
       if (currentBox.x > previousBox.x) {
         currentBox.width -= difference
@@ -118,16 +111,31 @@ function App () {
         currentBox.x = previousBox.x
       }
     }
-
+    
+    function gameOver () {
+      mode = MODES.GAMEOVER
+      
+      context.fillStyle = 'rgba(255, 0, 0, 0.5)'
+      context.fillRect(0, 0, canvas.width, canvas.height)
+      
+      context.font = 'bold 20px Arial'
+      context.fillStyle = 'white'
+      context.textAlign = 'center'
+      context.fillText(
+        'Game Over',
+        canvas.width / 2,
+        canvas.height / 2
+      )
+    }
+    
     function handleBoxLanding () {
-      const currentBox = boxes[currentRef.current]
-      const previousBox = boxes[currentRef.current - 1]
+      const currentBox = boxes[current]
+      const previousBox = boxes[current - 1]
       
       const difference = currentBox.x - previousBox.x
       
       if (Math.abs(difference) >= currentBox.width) {
-        gameOver(context, canvas)
-        mode = MODES.GAMEOVER
+        gameOver()
         return
       }
       
@@ -135,17 +143,17 @@ function App () {
       createNewDebris(difference)
       
       xSpeed += xSpeed > 0 ? 1 : -1
-      currentRef.current += 1
+      current++
       scrollCounter = BOX_HEIGHT
       mode = MODES.BOUNCE
       
-      score.textContent = currentRef.current - 1
+      score.textContent = current - 1 
       
       createNewBox()
     }
     
     function moveAndDetectCollision () {
-      const currentBox = boxes[currentRef.current]
+      const currentBox = boxes[current]
       currentBox.x += xSpeed
       
       const isMovingRight = xSpeed > 0
@@ -187,7 +195,7 @@ function App () {
       }]
   
       debris = { x: 0, y: 0, width: 0 }
-      currentRef.current = 1
+      current = 1
       mode = MODES.BOUNCE
       xSpeed = INITIAL_X_SPEED
       ySpeed = INITIAL_Y_SPEED
@@ -226,8 +234,8 @@ function App () {
   
   return (
     <>
-      <span>Puntuación: <span ref={scoreRef} id="score">0</span></span>
-      <canvas ref={canvasRef} id="canvas" width="320" height="500"></canvas>
+      <span>Puntuación: <span id="score">0</span></span>
+      <canvas id="canvas" width="320" height="500"></canvas>
     </>
   )
 }

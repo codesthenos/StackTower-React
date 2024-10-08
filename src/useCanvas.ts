@@ -7,6 +7,7 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const frameIdRef = useRef(0)
   const speedRef = useRef(INITIAL_X_SPEED)
+  const directionRef = useRef(1)
   const boxesRef = useRef<box[]>(INITIAL_BOXES)
 
   useEffect(() => {
@@ -17,8 +18,6 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
     function render () {
       if (!context) return
       //console.log('FRAME ID', frameIdRef.current)
-      const mode = frameIdRef.current < 300 ? MODES.BOUNCE : MODES.GAMEOVER
-      if (mode === MODES.GAMEOVER) return
       
       //const isMovingForwards = speedRef.current > 0
       //const isMovingBackwards = speedRef.current < 0
@@ -34,11 +33,20 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
       }
       */
 
-      speedRef.current = INITIAL_X_SPEED * frameIdRef.current
+      if (speedRef.current > 0 && boxesRef.current[0].x > 200) {
+        directionRef.current = -directionRef.current
+      }
+
+      speedRef.current = INITIAL_X_SPEED * frameIdRef.current * directionRef.current
+      
+      console.log('BOX X', boxesRef.current[0].x)
+      console.log('SPEED REF', speedRef.current)
+      
       boxesRef.current = [{ ...INITIAL_BOXES[0], x: 100 + speedRef.current }]
 
-      console.log('SPEED REF', speedRef.current)
-      console.log('BOXES.X', boxesRef.current[0].x)
+      const mode = boxesRef.current[0].x < -50 ? MODES.GAMEOVER : MODES.BOUNCE
+      if (mode === MODES.GAMEOVER) return
+
       draw({ context, boxes: boxesRef.current, mode })
       frameIdRef.current = window.requestAnimationFrame(render)
     }
