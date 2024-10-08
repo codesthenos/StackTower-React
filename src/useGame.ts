@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
-import { BOX_HEIGHT, CANVAS_HEIGHT, CANVAS_WIDTH, INITIAL_BOX_WIDTH, INITIAL_BOX_Y, INITIAL_X_SPEED, INITIAL_Y_SPEED, MODES } from './constants.ts'
-import { createStepColor, gameOver } from './gameLogic.ts'
+import { BOX_HEIGHT, CANVAS_WIDTH, INITIAL_BOX_WIDTH, INITIAL_BOX_Y, INITIAL_X_SPEED, INITIAL_Y_SPEED, MODES } from './constants.ts'
+import { createStepColor, drawBackground, gameOver } from './gameLogic.ts'
 import type { box, debris } from './types.d.ts'
 
 function useGame () {
@@ -21,12 +21,6 @@ function useGame () {
     const context = canvas.getContext('2d')
   
     const score = scoreRef.current
-  
-    function drawBackground () {
-      if (!context) return
-      context.fillStyle = 'rgba(0, 0, 0, 0.5)'
-      context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
-    }
     
     function drawDebris () {
       if (!context) return
@@ -109,7 +103,7 @@ function useGame () {
       const difference = currentBox.x - previousBox.x
       
       if (Math.abs(difference) >= currentBox.width) {
-        gameOver(context, canvas)
+        gameOver(context)
         modeRef.current = MODES.GAMEOVER
         return
       }
@@ -183,7 +177,7 @@ function useGame () {
     function draw () {
       if (modeRef.current === MODES.GAMEOVER) return
       
-      drawBackground()
+      drawBackground(context)
       drawBoxes()
       drawDebris()
       

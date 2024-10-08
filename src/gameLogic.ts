@@ -1,16 +1,24 @@
-export function gameOver (context: CanvasRenderingContext2D | null, canvas: HTMLCanvasElement | null) {
+import { CANVAS_HEIGHT, CANVAS_WIDTH } from "./constants.ts"
 
-  if (!context || !canvas) return
+export function drawBackground (context: CanvasRenderingContext2D | null) {
+  if (!context) return
+  context.fillStyle = 'rgba(0, 0, 0, 0.5)'
+  context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
+}
+
+export function gameOver (context: CanvasRenderingContext2D | null) {
+
+  if (!context) return
   context.fillStyle = 'rgba(255, 0, 0, 0.5)'
-  context.fillRect(0, 0, canvas.width, canvas.height)
+  context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
   
   context.font = 'bold 20px Arial'
   context.fillStyle = 'white'
   context.textAlign = 'center'
   context.fillText(
     'Game Over',
-    canvas.width / 2,
-    canvas.height / 2
+    CANVAS_WIDTH / 2,
+    CANVAS_HEIGHT / 2
   )
 }
 
