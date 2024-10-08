@@ -2,16 +2,16 @@ import { useGame } from './useGame.ts'
 import { CANVAS_WIDTH, CANVAS_HEIGHT } from './constants.ts'
 
 function Game () {
-  const { canvasRef, score, handleInput } = useGame()
+  const { canvasRef, scoreRef, score } = useGame()
 
   return (
     <>
-      <span>Score: <span>{score}</span></span>
+      <span>Score: <span ref={scoreRef}>{score}</span></span>
       <canvas
         ref={canvasRef}
+        id="canvas"
         width={CANVAS_WIDTH}
         height={CANVAS_HEIGHT}
-        onPointerDown={handleInput}
       />
     </>
   )
