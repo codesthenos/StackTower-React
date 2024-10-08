@@ -1,5 +1,5 @@
 import { createRoot } from 'react-dom/client'
-import App from './App2.tsx'
+import App from './my-refactor/App.tsx'
 import './index.css'
 
 createRoot(document.getElementById('root') as HTMLElement).render(
