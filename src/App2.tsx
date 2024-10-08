@@ -1,12 +1,15 @@
 import { useEffect, useRef } from 'react'
-import { MODES } from './constants.ts'
-import { gameOver } from './gameLogic.ts'
+import { MODES, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants.ts'
+import { createStepColor, gameOver } from './gameLogic.ts'
+import type { box } from './types.d.ts'
 
 function App () {
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const scoreRef = useRef<HTMLSpanElement | null>(null)
   const currentRef = useRef(1)
   const modeRef = useRef<MODES>(MODES.BOUNCE)
+  const scrollRef = useRef(0)
+  const cameraRef = useRef(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -24,47 +27,40 @@ function App () {
     const INITIAL_X_SPEED = 2
   
     // STATE
-    let boxes = []
+    let boxes: box[] = []
     let debris = { x: 0, y: 0, width: 0 }
-    let scrollCounter, cameraY, xSpeed, ySpeed
+    let xSpeed, ySpeed
   
     function drawBackground () {
+      if (!context) return
       context.fillStyle = 'rgba(0, 0, 0, 0.5)'
-      context.fillRect(0, 0, canvas.width, canvas.height)
+      context.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT)
     }
     
     function drawDebris () {
+      if (!context) return
       const { x, y, width } = debris
-      const newY = INITIAL_BOX_Y - y + cameraY
+      const newY = INITIAL_BOX_Y - y + cameraRef.current
       
       context.fillStyle = 'red'
       context.fillRect(x, newY, width, BOX_HEIGHT)
     }
     
     function drawBoxes () {
+      if (!context) return
       boxes.forEach((box) => {
         const { x, y, width, color } = box
-        const newY = INITIAL_BOX_Y - y + cameraY
+        const newY = INITIAL_BOX_Y - y + cameraRef.current
         
         context.fillStyle = color
         context.fillRect(x, newY, width, BOX_HEIGHT)
       })
     }
-    
-    function createStepColor (step) {
-      if (step === 0) return 'white'
-  
-      const red = Math.floor(Math.random() * 255)
-      const green = Math.floor(Math.random() * 255)
-      const blue = Math.floor(Math.random() * 255)
-  
-      return `rgb(${red}, ${green}, ${blue})`
-    }
   
     function updateCamera () {
-      if (scrollCounter > 0) {
-        cameraY++
-        scrollCounter--
+      if (scrollRef.current > 0) {
+        cameraRef.current++
+        scrollRef.current--
       }
     }
     
@@ -132,10 +128,10 @@ function App () {
       
       xSpeed += xSpeed > 0 ? 1 : -1
       currentRef.current += 1
-      scrollCounter = BOX_HEIGHT
+      scrollRef.current = BOX_HEIGHT
       modeRef.current = MODES.BOUNCE
       
-      score.textContent = currentRef.current - 1
+      if (score) score.textContent = `${currentRef.current - 1}`
       
       createNewBox()
     }
@@ -148,7 +144,7 @@ function App () {
       const isMovingLeft = xSpeed < 0
       
       const hasHitRightSide =
-      currentBox.x + currentBox.width > canvas.width
+      currentBox.x + currentBox.width > CANVAS_WIDTH
       
       const hasHitLeftSide = currentBox.x < 0
       
@@ -176,7 +172,7 @@ function App () {
     
     function initializeGameState () {
       boxes = [{
-        x: (canvas.width / 2) - (INITIAL_BOX_WIDTH / 2),
+        x: (CANVAS_WIDTH / 2) - (INITIAL_BOX_WIDTH / 2),
         y: 200,
         width: INITIAL_BOX_WIDTH,
         color: 'white'
@@ -187,8 +183,8 @@ function App () {
       modeRef.current = MODES.BOUNCE
       xSpeed = INITIAL_X_SPEED
       ySpeed = INITIAL_Y_SPEED
-      scrollCounter = 0
-      cameraY = 0
+      scrollRef.current = 0
+      cameraRef.current = 0
   
       createNewBox()
     }

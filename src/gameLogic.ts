@@ -13,3 +13,13 @@ export function gameOver (context: CanvasRenderingContext2D | null, canvas: HTML
     canvas.height / 2
   )
 }
+
+export function createStepColor (step: number) {
+  if (step === 0) return 'white'
+
+  const red = Math.floor(Math.random() * 255)
+  const green = Math.floor(Math.random() * 255)
+  const blue = Math.floor(Math.random() * 255)
+
+  return `rgb(${red}, ${green}, ${blue})`
+}

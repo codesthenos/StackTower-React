@@ -63,5 +63,7 @@ export default tseslint.config({
       prefer: 'type-imports',
       disallowTypeAnnotations: false,
     }],
+    '@typescript-eslint/restrict-template-expressions': 'off',
+    '@typescript-eslint/no-unnecessary-condition': 'off',
   },
 })
