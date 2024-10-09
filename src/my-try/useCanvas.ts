@@ -45,6 +45,7 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
         addBox()
         modeRef.current = MODE.BOUNCE
         currentRef.current++
+        speedRef.current += speedRef.current > 0 ? 1 : -1
       }
       draw({ context, boxes: boxesRef.current, mode: modeRef.current })
       frameIdRef.current = window.requestAnimationFrame(render)
