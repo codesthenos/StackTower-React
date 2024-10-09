@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import type { box } from './types.d.ts'
 import { BOX_HEIGHT, CANVAS_WIDTH, INITIAL_BOX, INITIAL_BOX_X, INITIAL_X_SPEED, MODE } from './constants.ts'
+import { getColor } from './canvasDraw.ts'
 
 function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingContext2D, boxes: box[], mode: MODE }) => void) {
 
@@ -29,7 +30,7 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
         x: INITIAL_BOX_X,
         y: boxesRef.current[currentRef.current].y + BOX_HEIGHT,
         width: boxesRef.current[currentRef.current].width,
-        color: "#eee"
+        color: getColor()
       }
       boxesRef.current = [...boxesRef.current, newBox]
     }
