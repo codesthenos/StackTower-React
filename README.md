@@ -1,5 +1,7 @@
 # Refactorización del 'Stack game' de [@midudev](https://github.com/midudev)
 
+## Visualización del juego [StackTower](https://codesthenos.github.io/StackTower-React/)
+
 ## Referencias al original:
 
 - [Video de referencia](https://www.youtube.com/watch?v=IEwL-TZBeqQ)
