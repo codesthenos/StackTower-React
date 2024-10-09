@@ -9,9 +9,9 @@
 
 Buscando seguir aprendiendo React despues de seguir todos los proyectos/videos del [curso de React](https://github.com/midudev/aprendiendo-react/tree/master/projects) de **midudev** vi en directo como hacía el juego usando _vanilla JavaScript_ y se me ocurrió intentar implementarlo pero usando react, creía que sabía cómo enfocarlo, pero he necesitado muchas horas para llegar a este resultado, y ni si quiera estoy seguro de si es 'lo más óptimo', pero al menos, evito el uso de let, y me acostumbro bastante al uso del useRef.
 
-## Carpetas y documentos
+El proyecto ha sido creado usando un [template original](https://github.com/codesthenos/codesthenos-vite-react-typescript-eslint-custom) basado en el template obtenido usando el comando `npm create vite@latest`
 
-El proyecto ha sido creado usando un [template original](https://github.com/codesthenos/codesthenos-vite-react-typescript-eslint-custom)
+## Carpetas y documentos
 
 ### public
 
