@@ -48,6 +48,10 @@ body {
   }
 }
 
+span {
+  user-select: none;
+}
+
 .App {
   display: flex;
   justify-content: center;
