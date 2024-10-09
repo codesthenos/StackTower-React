@@ -1,4 +1,4 @@
-import { CANVAS_WIDTH, CANVAS_HEIGHT, BOX_HEIGHT, MODES } from '../constants.ts'
+import { CANVAS_WIDTH, CANVAS_HEIGHT, BOX_HEIGHT, MODE } from './constants.ts'
 import type { box } from './types.d.ts'
 
 function drawBackground ({ context }: { context: CanvasRenderingContext2D }) {
@@ -16,8 +16,8 @@ function drawBoxes ({ context, boxes }: { context: CanvasRenderingContext2D, box
   })
 }
 
-function draw ({ context, boxes, mode }: { context: CanvasRenderingContext2D, boxes: box[], mode: MODES }) {
-  if (mode === MODES.GAMEOVER) return
+function draw ({ context, boxes, mode }: { context: CanvasRenderingContext2D, boxes: box[], mode: MODE }) {
+  if (mode === MODE.GAMEOVER) return
 
   drawBackground({ context })
   drawBoxes({ context, boxes })

@@ -8,7 +8,7 @@ export const INITIAL_BOX_Y = 600
 
 export const INITIAL_BOXES = [{ x: 100, y: 100, width: 100, color: '#eee' }]
 
-export enum MODES {
+export enum MODE {
   STOP = 'stop',
   BOUNCE = 'bounce',
   GAMEOVER = 'gameover'
