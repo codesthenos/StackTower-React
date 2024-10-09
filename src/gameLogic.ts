@@ -1,4 +1,5 @@
-import { CANVAS_HEIGHT, CANVAS_WIDTH } from './constants.ts'
+import { BOX_HEIGHT, CANVAS_HEIGHT, CANVAS_WIDTH, INITIAL_BOX_Y } from './constants.ts'
+import type { Box, Debris } from './types.d.ts'
 
 export function drawBackground (context: CanvasRenderingContext2D) {
   context.fillStyle = 'rgba(0, 0, 0, 0.5)'
@@ -27,4 +28,26 @@ export function createStepColor (step: number) {
   const blue = Math.floor(Math.random() * 255)
 
   return `rgb(${red}, ${green}, ${blue})`
+}
+
+export function drawDebris (context: CanvasRenderingContext2D, currentDebrisRef: Debris, currentCameraRef: number) {
+  if (!context) return
+
+  const { x, y, width } = currentDebrisRef
+  const newY = INITIAL_BOX_Y - y + currentCameraRef
+  
+  context.fillStyle = 'red'
+  context.fillRect(x, newY, width, BOX_HEIGHT)
+}
+
+export function drawBoxes (context: CanvasRenderingContext2D, currentBoxesRef: Box[], currentCameraRef: number) {
+  if (!context) return
+
+  currentBoxesRef.forEach((box) => {
+    const { x, y, width, color } = box
+    const newY = INITIAL_BOX_Y - y + currentCameraRef
+    
+    context.fillStyle = color
+    context.fillRect(x, newY, width, BOX_HEIGHT)
+  })
 }

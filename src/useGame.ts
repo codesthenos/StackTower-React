@@ -1,6 +1,6 @@
 import { useRef, useEffect, useState } from 'react'
-import { BOX_HEIGHT, CANVAS_WIDTH, INITIAL_BOX_WIDTH, INITIAL_BOX_Y, INITIAL_X_SPEED, INITIAL_Y_SPEED, MODES } from './constants.ts'
-import { createStepColor, drawBackground, gameOver } from './gameLogic.ts'
+import { BOX_HEIGHT, CANVAS_WIDTH, INITIAL_BOX_WIDTH, INITIAL_X_SPEED, INITIAL_Y_SPEED, MODES } from './constants.ts'
+import { createStepColor, drawBackground, drawBoxes, drawDebris, gameOver } from './gameLogic.ts'
 import type { Box, Debris } from './types.d.ts'
 
 export function useGame () {
@@ -23,28 +23,6 @@ export function useGame () {
     const context = canvas.getContext('2d')
     if (!context) return
   
-    function drawDebris () {
-      if (!context) return
-
-      const { x, y, width } = debrisRef.current
-      const newY = INITIAL_BOX_Y - y + cameraRef.current
-      
-      context.fillStyle = 'red'
-      context.fillRect(x, newY, width, BOX_HEIGHT)
-    }
-    
-    function drawBoxes () {
-      if (!context) return
-
-      boxesRef.current.forEach((box) => {
-        const { x, y, width, color } = box
-        const newY = INITIAL_BOX_Y - y + cameraRef.current
-        
-        context.fillStyle = color
-        context.fillRect(x, newY, width, BOX_HEIGHT)
-      })
-    }
-  
     function updateCamera () {
       if (scrollRef.current > 0) {
         cameraRef.current++
@@ -53,12 +31,12 @@ export function useGame () {
     }
     
     function createNewBox () {
-      boxesRef.current[currentRef.current] = {
+      boxesRef.current = [...boxesRef.current, {
         x: 0,
         y: (currentRef.current + 5) * BOX_HEIGHT,
         width: boxesRef.current[currentRef.current - 1].width,
         color: createStepColor(currentRef.current)
-      }
+      }]
     }
     
     function createNewDebris (difference: number) {
@@ -180,8 +158,8 @@ export function useGame () {
       if (modeRef.current === MODES.GAMEOVER) return
       
       drawBackground(context)
-      drawBoxes()
-      drawDebris()
+      drawBoxes(context, boxesRef.current, cameraRef.current)
+      drawDebris(context, debrisRef.current, cameraRef.current)
       
       if (modeRef.current === MODES.BOUNCE) {
         moveAndDetectCollision()
