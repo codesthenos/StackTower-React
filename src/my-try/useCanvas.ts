@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react'
 import type { box } from './types.d.ts'
-import { INITIAL_BOXES, INITIAL_X_SPEED, MODE } from './constants.ts'
+import { INITIAL_BOX, INITIAL_X_SPEED, MODE } from './constants.ts'
 
 function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingContext2D, boxes: box[], mode: MODE }) => void) {
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const frameIdRef = useRef(0)
   const speedRef = useRef(INITIAL_X_SPEED)
-  const boxesRef = useRef<box[]>(INITIAL_BOXES)
+  const boxesRef = useRef<box[]>([INITIAL_BOX])
   const modeRef = useRef<MODE>(MODE.BOUNCE)
 
   useEffect(() => {
@@ -15,16 +15,16 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
     if (!canvas) return
     const context = canvas.getContext('2d')
     
+    function moveBox () {
+      if ((speedRef.current > 0 && boxesRef.current[0].x > 350) || (speedRef.current < 0 && boxesRef.current[0].x < -50) ) {
+        speedRef.current = -speedRef.current
+      }
+      
+      boxesRef.current[0].x += speedRef.current
+    }
+
     function render () {
       if (!context) return
-
-      function moveBox () {
-        if ((speedRef.current > 0 && boxesRef.current[0].x > 350) || (speedRef.current < 0 && boxesRef.current[0].x < -50) ) {
-          speedRef.current = -speedRef.current
-        }
-        
-        boxesRef.current[0].x += speedRef.current
-      }
 
       //Start Gameloop
       if (modeRef.current === MODE.BOUNCE) moveBox()
