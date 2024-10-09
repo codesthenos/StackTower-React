@@ -7,7 +7,6 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
   const canvasRef = useRef<HTMLCanvasElement | null>(null)
   const frameIdRef = useRef(0)
   const speedRef = useRef(INITIAL_X_SPEED)
-  const directionRef = useRef(1)
   const boxesRef = useRef<box[]>(INITIAL_BOXES)
 
   useEffect(() => {
@@ -31,23 +30,19 @@ function useCanvas (draw: ({ context, boxes, mode }: { context: CanvasRenderingC
       ) {
         speedRef.current = -speedRef.current
       }
-      */
-
-      if (speedRef.current > 0 && boxesRef.current[0].x > 200) {
-        directionRef.current = -directionRef.current
-      }
-
-      speedRef.current = INITIAL_X_SPEED * frameIdRef.current * directionRef.current
-      
       console.log('BOX X', boxesRef.current[0].x)
       console.log('SPEED REF', speedRef.current)
-      
-      boxesRef.current = [{ ...INITIAL_BOXES[0], x: 100 + speedRef.current }]
-
       const mode = boxesRef.current[0].x < -50 ? MODES.GAMEOVER : MODES.BOUNCE
       if (mode === MODES.GAMEOVER) return
+      */
 
-      draw({ context, boxes: boxesRef.current, mode })
+      if ((speedRef.current > 0 && boxesRef.current[0].x > 350) || (speedRef.current < 0 && boxesRef.current[0].x < -50) ) {
+        speedRef.current = -speedRef.current
+      }
+      
+      boxesRef.current[0].x += speedRef.current
+
+      draw({ context, boxes: boxesRef.current, mode: MODES.BOUNCE })
       frameIdRef.current = window.requestAnimationFrame(render)
     }
     render()

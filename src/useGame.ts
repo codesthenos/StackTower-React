@@ -16,6 +16,7 @@ export function useGame () {
   const ySpeedRef = useRef(INITIAL_Y_SPEED)
   const boxesRef = useRef<Box[]>([])
   const debrisRef = useRef<Debris>({ x: 0, y: 0, width: 0 })
+  const animationId = useRef(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -170,7 +171,7 @@ export function useGame () {
       debrisRef.current.y -= ySpeedRef.current
       updateCamera()
       
-      requestAnimationFrame(draw)
+      animationId.current = requestAnimationFrame(draw)
     }
     
     function restart () {
@@ -190,6 +191,7 @@ export function useGame () {
     return () => {
       canvas.removeEventListener('pointerdown', handleInput)
       document.removeEventListener('keydown', handleInput)
+      window.cancelAnimationFrame(animationId.current)
     }
   }, [])
 
