@@ -33,12 +33,6 @@ El logo de vite usado como favicon, lo dejo para dar creditos a vite y porque es
   - **useGame.ts**, custom hook principal del que sale toda la lógica que depende de las constantes obtenidas de los useRef()
   - **vite-env.d.ts**, vite ts config
 
-- Y las carpetas:
-
-  - _my-refactor_: La versión a la que llegué después de mucho aprender.
-  - _my-try_: Un intento de hacerlo de otra manera que surgió mientras aprendía.
-  - _v0dev-refactor_: Despues de liarme más que ayudarme la verdad, v0dev llega a la conclusión de que implementación es lo mejor que se le ocurre, y acaba incluyendo el detalle de crear un estado con useState para controlar el score y esto mejora ligeramente mi versión, pero es principalmente lo mismo.
-
 ### documentos:
 
 - **.gitignore**, para evitar subir cositas como el node_modules etc
